@@ -5,21 +5,18 @@ import { useNavigate } from "react-router-dom";
 const Toss = () => {
     const navigate = useNavigate();
 
-    // State to store toss result and toss outcome
     const [tossResult, setTossResult] = useState(null);
     const [showOptions, setShowOptions] = useState(false);
     const [winningTeam, setWinningTeam] = useState(null);
 
-    // Function to handle coin flip (Heads or Tails)
     const handleToss = (teamChoice) => {
-        const coinFlip = Math.random() < 0.5 ? "Heads" : "Tails"; // Randomly choose between Heads or Tails
+        const coinFlip = Math.random() < 0.5 ? "Heads" : "Tails";
 
-        // Determine the winner based on the coin flip and user choice
         if (teamChoice === coinFlip) {
             const teamWinner = teamChoice === "Heads" ? "Team A" : "Team B";
             setTossResult(`${teamWinner} won the toss!`);
             setWinningTeam(teamWinner);
-            setShowOptions(true); // Show Bat/Ball options after the toss
+            setShowOptions(true); 
         } else {
             const teamWinner = teamChoice === "Heads" ? "Team B" : "Team A";
             setTossResult(`${teamWinner} won the toss!`);
@@ -28,10 +25,9 @@ const Toss = () => {
         }
     };
 
-    // Function to handle Bat/Ball choice
     const handleBatBallChoice = (choice) => {
         alert(`${winningTeam} chose to ${choice}.`);
-        navigate("/match"); // Navigate to match page
+        navigate("/match"); 
     };
 
     return (
@@ -52,7 +48,6 @@ const Toss = () => {
             </Typography>
 
             {!tossResult ? (
-                // Show Heads/Tails buttons if the toss has not been decided yet
                 <Box sx={{ display: "flex", gap: 2, mt: 4 }}>
                     <Button
                         variant="contained"
@@ -70,7 +65,6 @@ const Toss = () => {
                     </Button>
                 </Box>
             ) : (
-                // Show the toss result and options if the toss is decided
                 <Box sx={{ textAlign: "center" }}>
                     <Typography variant="h6" sx={{ mt: 2 }}>
                         {tossResult}

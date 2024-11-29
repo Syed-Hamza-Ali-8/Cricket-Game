@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useReducer } from "react";
 
-// Initial game state
 const initialState = {
     score: 0,
     wickets: 0,
@@ -9,7 +8,6 @@ const initialState = {
     isGameOver: false,
 };
 
-// Reducer to handle state updates
 const gameReducer = (state, action) => {
     switch (action.type) {
         case "UPDATE_SCORE":
@@ -23,10 +21,8 @@ const gameReducer = (state, action) => {
     }
 };
 
-// Create Context
 const GameContext = createContext();
 
-// Provide Context to Components
 export const GameProvider = ({ children }) => {
     const [state, dispatch] = useReducer(gameReducer, initialState);
 
@@ -37,5 +33,4 @@ export const GameProvider = ({ children }) => {
     );
 };
 
-// Custom Hook for Context
 export const useGame = () => useContext(GameContext);

@@ -12,7 +12,7 @@ const Teams = () => {
 
     const handleNext = () => {
         if (selectedTeam) {
-            navigate("/toss"); // Navigate to toss page after team selection
+            navigate("/toss");
         } else {
             alert("Please select a team first!");
         }

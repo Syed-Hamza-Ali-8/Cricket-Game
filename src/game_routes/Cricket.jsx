@@ -2,17 +2,15 @@ import React from "react";
 import { Box, Button, Typography, Container } from "@mui/material";
 import SportsCricketIcon from "@mui/icons-material/SportsCricket";
 import { useNavigate } from "react-router-dom";
-import { auth } from "../config/firebase"; // Assuming you've set up Firebase Authentication
-import { signOut } from "firebase/auth"; // Import Firebase signOut function
+import { auth } from "../config/firebase";
+import { signOut } from "firebase/auth";
 
 const CricketHomePage = () => {
     const navigate = useNavigate();
 
-    // Handle the "Sign Out" button click
     const handleSignOut = () => {
         signOut(auth)
             .then(() => {
-                // Redirect to login page after successful sign-out
                 navigate("/");
             })
             .catch((error) => {
@@ -20,9 +18,8 @@ const CricketHomePage = () => {
             });
     };
 
-    // Handle the "Start Game" button click
     const handleStartGame = () => {
-        navigate("/teams"); // Navigate to Teams page
+        navigate("/teams");
     };
 
     return (
@@ -109,7 +106,7 @@ const CricketHomePage = () => {
                             fontSize: { xs: "0.8rem", sm: "1rem", md: "1.2rem" },
                             px: { xs: 2, sm: 3, md: 4 },
                         }}
-                        onClick={handleStartGame} // On clicking, navigate to teams page
+                        onClick={handleStartGame}
                     >
                         Start Game
                     </Button>

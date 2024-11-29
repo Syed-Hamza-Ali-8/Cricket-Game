@@ -5,7 +5,7 @@ import Signup from "./pages/Signup";
 import { LoginChecker, RouteProtected } from "./routes/ProtectedRoutes";
 import CricketHomePage from "./game_routes/Cricket";
 import Teams from "./Game_Section/Teams";
-import Toss from "./Game_Section/Toss"; // Import Toss page
+import Toss from "./Game_Section/Toss";
 import Match from "./game_routes/Match";
 
 const router = createBrowserRouter([
