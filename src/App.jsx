@@ -7,6 +7,7 @@ import CricketHomePage from "./game_routes/Cricket";
 import Teams from "./Game_Section/Teams";
 import Toss from "./Game_Section/Toss";
 import Match from "./game_routes/Match";
+import NotFound from "./components/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -54,6 +55,14 @@ const router = createBrowserRouter([
     element: (
       <RouteProtected>
         <Match />
+      </RouteProtected>
+    ),
+  },
+  {
+    path: "*",
+    element: (
+      <RouteProtected>
+        <NotFound />
       </RouteProtected>
     ),
   },
