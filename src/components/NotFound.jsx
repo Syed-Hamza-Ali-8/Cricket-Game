@@ -1,4 +1,3 @@
-// src/pages/NotFound.jsx
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -6,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 const NotFound = () => {
     const navigate = useNavigate();
 
-    // Redirect the user to the home page or any other page if they click the button
     const goHome = () => {
         navigate("/");
     };
