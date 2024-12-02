@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyBbaiWRc3EXWoBHcKzjUbjaniVQqlWMguQ",
-    authDomain: "cricket-game-4268e.firebaseapp.com",
-    projectId: "cricket-game-4268e",
-    storageBucket: "cricket-game-4268e.firebasestorage.app",
-    messagingSenderId: "1050553254015",
-    appId: "1:1050553254015:web:0f410f4c46898fe5a5bf4a",
-    measurementId: "G-6TQRR5NNY1"
+    apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+    authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+    projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+    storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+    messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+    appId: import.meta.env.VITE_FIREBASE_APP_ID,
+    measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 const app = initializeApp(firebaseConfig);
