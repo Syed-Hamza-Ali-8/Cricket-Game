@@ -5,6 +5,8 @@ import FlagIcon from "@mui/icons-material/Flag";
 import SportsCricketIcon from "@mui/icons-material/SportsCricket";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import { motion } from "framer-motion";
+import { db } from "../config/firebase";
+import { doc, setDoc } from "firebase/firestore";
 
 const teams = [
     { id: "team1", name: "India", flagUrl: "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/in.svg" },
@@ -17,8 +19,6 @@ const teams = [
     { id: "team8", name: "Bangladesh", flagUrl: "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/bd.svg" },
     { id: "team9", name: "West Indies", flagUrl: "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/jm.svg" },
     { id: "team10", name: "Afghanistan", flagUrl: "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/af.svg" },
-    { id: "team11", name: "Zimbabwe", flagUrl: "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/zw.svg" },
-    { id: "team12", name: "Ireland", flagUrl: "https://cdn.jsdelivr.net/gh/lipis/flag-icons/flags/4x3/ie.svg" },
 ];
 
 const TeamSelection = () => {
@@ -27,20 +27,31 @@ const TeamSelection = () => {
     const [player2Team, setPlayer2Team] = useState(null);
     const [currentPlayer, setCurrentPlayer] = useState("player1");
 
-    const handleSelectTeam = (teamId) => {
+    const handleSelectTeam = async (team) => {
         if (currentPlayer === "player1") {
-            setPlayer1Team(teamId);
+            setPlayer1Team(team);
+            await setDoc(doc(db, "teamsCollection", team.id), {
+                name: team.name,
+                flagUrl: team.flagUrl,
+                players: [],
+            });
             setCurrentPlayer("player2");
         } else if (currentPlayer === "player2") {
-            setPlayer2Team(teamId);
+            setPlayer2Team(team);
+            await setDoc(doc(db, "teamsCollection", team.id), {
+                name: team.name,
+                flagUrl: team.flagUrl,
+                players: [],
+            });
         }
     };
 
-    const isTeamDisabled = (teamId) => {
-        return player1Team === teamId || player2Team === teamId || (player1Team && player2Team);
+    const isTeamDisabled = (team) => {
+        return (player1Team && player1Team.id === team.id) || (player2Team && player2Team.id === team.id);
     };
 
     const handleBack = () => navigate(-1);
+    const handleCheck11 = () => navigate("/playing11", { state: { player1Team, player2Team } });
 
     return (
         <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
@@ -52,7 +63,6 @@ const TeamSelection = () => {
                     <SportsCricketIcon sx={{ fontSize: "3rem", color: "green" }} />
                     {currentPlayer === "player1" ? "Choose Your Team" : "Choose Opponent Team"}
                 </Typography>
-
                 <Grid container spacing={2} justifyContent="center">
                     {teams.map((team) => (
                         <Grid item xs={12} sm={4} md={3} key={team.id}>
@@ -60,48 +70,19 @@ const TeamSelection = () => {
                                 <Button
                                     variant="outlined"
                                     fullWidth
-                                    disabled={isTeamDisabled(team.id)}
+                                    disabled={isTeamDisabled(team)}
                                     sx={{
-                                        borderColor:
-                                            team.id === player1Team
-                                                ? "blue"
-                                                : team.id === player2Team
-                                                    ? "red"
-                                                    : "gray",
-                                        backgroundColor:
-                                            team.id === player1Team
-                                                ? "lightblue"
-                                                : team.id === player2Team
-                                                    ? "lightcoral"
-                                                    : "white",
-                                        color:
-                                            team.id === player1Team
-                                                ? "blue"
-                                                : team.id === player2Team
-                                                    ? "red"
-                                                    : "gray",
+                                        borderColor: player1Team === team ? "blue" : player2Team === team ? "red" : "gray",
+                                        backgroundColor: player1Team === team ? "lightblue" : player2Team === team ? "lightcoral" : "white",
+                                        color: player1Team === team ? "blue" : player2Team === team ? "red" : "gray",
                                         display: "flex",
                                         flexDirection: "column",
                                         alignItems: "center",
                                         justifyContent: "center",
                                         gap: 1,
                                         height: "200px",
-                                        "&:hover": {
-                                            backgroundColor:
-                                                team.id === player1Team
-                                                    ? "lightblue"
-                                                    : team.id === player2Team
-                                                        ? "lightcoral"
-                                                        : "lightgreen",
-                                            color:
-                                                team.id === player1Team
-                                                    ? "blue"
-                                                    : team.id === player2Team
-                                                        ? "red"
-                                                        : "green",
-                                        },
                                     }}
-                                    onClick={() => handleSelectTeam(team.id)}
+                                    onClick={() => handleSelectTeam(team)}
                                 >
                                     <img
                                         src={team.flagUrl}
@@ -109,21 +90,30 @@ const TeamSelection = () => {
                                         style={{
                                             width: "50px",
                                             height: "50px",
-                                            filter:
-                                                player1Team && player2Team && !(player1Team === team.id || player2Team === team.id)
-                                                    ? "grayscale(100%)"
-                                                    : "none",
+                                            filter: player1Team && player2Team && !(player1Team === team || player2Team === team)
+                                                ? "grayscale(100%)"
+                                                : "none",
                                         }}
                                     />
                                     <Typography variant="body1">{team.name}</Typography>
-                                    {team.id === player1Team && <FlagIcon sx={{ color: "blue" }} />}
-                                    {team.id === player2Team && <FlagIcon sx={{ color: "red" }} />}
+                                    {player1Team === team && <FlagIcon sx={{ color: "blue" }} />}
+                                    {player2Team === team && <FlagIcon sx={{ color: "red" }} />}
                                 </Button>
                             </motion.div>
                         </Grid>
                     ))}
                 </Grid>
             </Box>
+            {player1Team && player2Team && (
+                <Button
+                    variant="contained"
+                    color="primary"
+                    sx={{ marginTop: "20px" }}
+                    onClick={handleCheck11}
+                >
+                    Check Your 11
+                </Button>
+            )}
         </Container>
     );
 };
