@@ -18,6 +18,10 @@ const CricketHomePage = () => {
             });
     };
 
+    const handleStartGame = () => {
+        navigate("/teams");
+    };
+
     return (
         <Container
             maxWidth={false}
@@ -98,6 +102,7 @@ const CricketHomePage = () => {
                     <Button
                         variant="contained"
                         color="success"
+                        onClick={handleStartGame}
                         sx={{
                             fontSize: { xs: "0.8rem", sm: "1rem", md: "1.2rem" },
                             px: { xs: 2, sm: 3, md: 4 },

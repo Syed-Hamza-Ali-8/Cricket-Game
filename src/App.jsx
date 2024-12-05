@@ -5,6 +5,7 @@ import Signup from "./pages/Signup";
 import { LoginChecker, RouteProtected } from "./routes/ProtectedRoutes";
 import CricketHomePage from "./game_routes/Cricket";
 import NotFound from "./components/NotFound";
+import TeamSelection from "./Game_Section/Teams";
 
 const router = createBrowserRouter([
   {
@@ -32,12 +33,16 @@ const router = createBrowserRouter([
     ),
   },
   {
-    path: "*",
+    path: "/teams",
     element: (
       <RouteProtected>
-        <NotFound />
+        <TeamSelection />
       </RouteProtected>
     ),
+  },
+  {
+    path: "*",
+    element: <NotFound />, // No RouteProtected for 404
   },
 ]);
 
