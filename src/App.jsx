@@ -8,6 +8,7 @@ import NotFound from "./components/NotFound";
 import TeamSelection from "./Game_Section/Teams";
 import Playing11 from "./Game_Section/Players";
 import Toss from "./Game_Section/Toss";
+import Game from "./Game_Section/Game";
 
 const router = createBrowserRouter([
   {
@@ -55,6 +56,14 @@ const router = createBrowserRouter([
     element: (
       <RouteProtected>
         <Toss />
+      </RouteProtected>
+    ),
+  },
+  {
+    path: "/game",
+    element: (
+      <RouteProtected>
+        <Game />
       </RouteProtected>
     ),
   },

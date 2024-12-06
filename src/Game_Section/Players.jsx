@@ -1,11 +1,15 @@
 import React, { useState } from "react";
 import { Box, Typography, Button, Container, TextField } from "@mui/material";
 import { useLocation, useNavigate } from "react-router-dom";
+import SportsCricketIcon from "@mui/icons-material/SportsCricket";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import { motion } from "framer-motion";
 
-// Define the team players data
 const teamPlayers = {
-    team1: ["Rohit Sharma", "KL Rahul", "Virat Kohli", "Suryakumar Yadav", "Hardik Pandya", "Ravindra Jadeja", "Dinesh Karthik", "Bhuvneshwar Kumar", "Jasprit Bumrah", "Yuzvendra Chahal", "Arshdeep Singh"],
-    team2: ["David Warner", "Mitchell Marsh", "Steve Smith", "Glenn Maxwell", "Marcus Stoinis", "Matthew Wade", "Mitchell Starc", "Pat Cummins", "Adam Zampa", "Josh Hazlewood", "Cameron Green"],
+    team1: [
+        "Rohit Sharma", "KL Rahul", "Virat Kohli", "Suryakumar Yadav", "Hardik Pandya", "Ravindra Jadeja", "Dinesh Karthik", "Bhuvneshwar Kumar", "Jasprit Bumrah", "Yuzvendra Chahal", "Arshdeep Singh"],
+    team2: [
+        "David Warner", "Mitchell Marsh", "Steve Smith", "Glenn Maxwell", "Marcus Stoinis", "Matthew Wade", "Mitchell Starc", "Pat Cummins", "Adam Zampa", "Josh Hazlewood", "Cameron Green"],
     team3: [
         "Jos Buttler", "Jonny Bairstow", "Ben Stokes", "Harry Brook", "Liam Livingstone",
         "Moeen Ali", "Sam Curran", "Chris Woakes", "Adil Rashid", "Mark Wood", "Reece Topley"
@@ -79,101 +83,170 @@ const Playing11 = () => {
     };
 
     const handleGoToToss = () => {
-        navigate("/toss");  // Adjust the URL to your toss page route
+        navigate("/toss"); // Adjust the URL to your toss page route
     };
 
     return (
-        <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
-            <Typography variant="h4" sx={{ mb: 3 }}>
-                {player1Team?.name} vs {player2Team?.name}
+        <Box
+            sx={{
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "center",
+                background: "linear-gradient(120deg, #1b5e20, #4caf50, #a5d6a7)",
+                animation: "bgAnimation 5s infinite alternate",
+                "@keyframes bgAnimation": {
+                    "0%": { background: "linear-gradient(120deg, #1b5e20, #4caf50)" },
+                    "100%": { background: "linear-gradient(120deg, #1b5e20, #81c784)" },
+                },
+                color: "#ffffff",
+                textAlign: "center",
+                padding: 3,
+            }}
+        >
+            <Typography variant="h3" component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+                <SportsCricketIcon sx={{ fontSize: 50, mb: -1 }} /> Playing XI
             </Typography>
 
-            {/* Team 1 Players */}
-            {player1Team && (
-                <Box sx={{ textAlign: "center", mb: 3 }}>
-                    <Typography variant="h5" sx={{ mb: 2 }}>
-                        {player1Team.name}
-                    </Typography>
-                    {teamPlayers[`team${player1Team.id}`]?.map((player, index) => (
-                        <Box key={index} sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 1 }}>
-                            {team1EditIndex === index ? (
-                                <Box>
+            {/* Match Information */}
+            <Typography
+                variant="h4"
+                sx={{ mb: 3 }}
+                component={motion.div}
+                initial={{ y: -50 }}
+                animate={{ y: 0 }}
+                transition={{ duration: 1 }}
+            >
+                {player1Team?.name || "Team 1"} vs {player2Team?.name || "Team 2"}
+            </Typography>
+
+            {/* Teams Section */}
+            <Container
+                sx={{
+                    display: "flex",
+                    justifyContent: "space-around",
+                    alignItems: "center",
+                    gap: 2,
+                    flexWrap: "wrap",
+                }}
+            >
+                {/* Team 1 */}
+                {player1Team && (
+                    <Box sx={{ textAlign: "center", width: "45%" }}>
+                        <Typography variant="h5" sx={{ mb: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <AccountCircleIcon sx={{ mr: 1 }} />
+                            {player1Team.name}
+                        </Typography>
+                        {teamPlayers[`team${player1Team.id}`]?.map((player, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    mb: 1,
+                                    gap: 1,
+                                }}
+                                component={motion.div}
+                                initial={{ x: -100 }}
+                                animate={{ x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                {team1EditIndex === index ? (
                                     <TextField
                                         value={team1PlayerName}
                                         onChange={(e) => setTeam1PlayerName(e.target.value)}
                                         variant="outlined"
                                         size="small"
-                                        sx={{ mr: 1 }}
+                                        sx={{ width: "70%" }}
                                     />
-                                    <Button variant="contained" color="primary" onClick={() => handleSavePlayer(1, index)}>
-                                        Save
-                                    </Button>
-                                </Box>
-                            ) : (
-                                <>
+                                ) : (
                                     <Typography variant="body1">{player}</Typography>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        sx={{ ml: 1 }}
-                                        onClick={() => handleEditPlayer(1, index)}
-                                    >
-                                        Edit
-                                    </Button>
-                                </>
-                            )}
-                        </Box>
-                    ))}
-                </Box>
-            )}
+                                )}
+                                <Button
+                                    variant="contained"
+                                    color={team1EditIndex === index ? "success" : "secondary"}
+                                    onClick={
+                                        team1EditIndex === index
+                                            ? () => handleSavePlayer(1, index)
+                                            : () => handleEditPlayer(1, index)
+                                    }
+                                >
+                                    {team1EditIndex === index ? "Save" : "Edit"}
+                                </Button>
+                            </Box>
+                        ))}
+                    </Box>
+                )}
 
-            {/* Team 2 Players */}
-            {player2Team && (
-                <Box sx={{ textAlign: "center", mb: 3 }}>
-                    <Typography variant="h5" sx={{ mb: 2 }}>
-                        {player2Team.name}
-                    </Typography>
-                    {teamPlayers[`team${player2Team.id}`]?.map((player, index) => (
-                        <Box key={index} sx={{ display: "flex", alignItems: "center", justifyContent: "center", mb: 1 }}>
-                            {team2EditIndex === index ? (
-                                <Box>
+                {/* Team 2 */}
+                {player2Team && (
+                    <Box sx={{ textAlign: "center", width: "45%" }}>
+                        <Typography variant="h5" sx={{ mb: 2, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                            <AccountCircleIcon sx={{ mr: 1 }} />
+                            {player2Team.name}
+                        </Typography>
+                        {teamPlayers[`team${player2Team.id}`]?.map((player, index) => (
+                            <Box
+                                key={index}
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    mb: 1,
+                                    gap: 1,
+                                }}
+                                component={motion.div}
+                                initial={{ x: 100 }}
+                                animate={{ x: 0 }}
+                                transition={{ delay: index * 0.1 }}
+                            >
+                                {team2EditIndex === index ? (
                                     <TextField
                                         value={team2PlayerName}
                                         onChange={(e) => setTeam2PlayerName(e.target.value)}
                                         variant="outlined"
                                         size="small"
-                                        sx={{ mr: 1 }}
+                                        sx={{ width: "70%" }}
                                     />
-                                    <Button variant="contained" color="primary" onClick={() => handleSavePlayer(2, index)}>
-                                        Save
-                                    </Button>
-                                </Box>
-                            ) : (
-                                <>
+                                ) : (
                                     <Typography variant="body1">{player}</Typography>
-                                    <Button
-                                        variant="outlined"
-                                        color="secondary"
-                                        sx={{ ml: 1 }}
-                                        onClick={() => handleEditPlayer(2, index)}
-                                    >
-                                        Edit
-                                    </Button>
-                                </>
-                            )}
-                        </Box>
-                    ))}
-                </Box>
-            )}
+                                )}
+                                <Button
+                                    variant="contained"
+                                    color={team2EditIndex === index ? "success" : "secondary"}
+                                    onClick={
+                                        team2EditIndex === index
+                                            ? () => handleSavePlayer(2, index)
+                                            : () => handleEditPlayer(2, index)
+                                    }
+                                >
+                                    {team2EditIndex === index ? "Save" : "Edit"}
+                                </Button>
+                            </Box>
+                        ))}
+                    </Box>
+                )}
+            </Container>
 
-            {/* Toss Time Section */}
-            <Typography variant="h5" sx={{ mb: 2, mt: 3 }}>
-                It's toss time
+            {/* Toss Section */}
+            <Typography variant="h5" sx={{ mt: 4 }} component={motion.div} initial={{ scale: 0.8 }} animate={{ scale: 1 }} transition={{ duration: 0.5 }}>
+                It's Toss Time!
             </Typography>
-            <Button variant="contained" color="primary" onClick={handleGoToToss}>
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleGoToToss}
+                sx={{ mt: 2 }}
+                component={motion.button}
+                initial={{ scale: 1 }}
+                whileHover={{ scale: 1.1 }}
+                transition={{ type: "spring", stiffness: 200 }}
+            >
                 Go to Toss
             </Button>
-        </Container>
+        </Box>
     );
 };
 

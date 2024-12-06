@@ -30,12 +30,12 @@ const TeamSelection = () => {
     const handleSelectTeam = async (team) => {
         if (currentPlayer === "player1") {
             setPlayer1Team(team);
+            setCurrentPlayer("player2"); // Update state immediately
             await setDoc(doc(db, "teamsCollection", team.id), {
                 name: team.name,
                 flagUrl: team.flagUrl,
                 players: [],
             });
-            setCurrentPlayer("player2");
         } else if (currentPlayer === "player2") {
             setPlayer2Team(team);
             await setDoc(doc(db, "teamsCollection", team.id), {
@@ -51,7 +51,14 @@ const TeamSelection = () => {
     };
 
     const handleBack = () => navigate(-1);
-    const handleCheck11 = () => navigate("/playing11", { state: { player1Team, player2Team } });
+
+    const handleToss = async () => {
+        const tossWinner = Math.random() < 0.5 ? player1Team : player2Team; // Randomly choose toss winner
+        await setDoc(doc(db, "gameData", "currentGame"), {
+            battingTeam: tossWinner.name, // Store the toss winner in Firestore
+        });
+        navigate("/toss"); // Redirect to the Toss page
+    };
 
     return (
         <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "100vh" }}>
@@ -63,9 +70,9 @@ const TeamSelection = () => {
                     <SportsCricketIcon sx={{ fontSize: "3rem", color: "green" }} />
                     {currentPlayer === "player1" ? "Choose Your Team" : "Choose Opponent Team"}
                 </Typography>
-                <Grid container spacing={2} justifyContent="center">
+                <Grid container spacing={{ xs: 1, sm: 2, md: 3 }} justifyContent="center" sx={{ maxHeight: "calc(100vh - 200px)", overflowY: "auto" }}>
                     {teams.map((team) => (
-                        <Grid item xs={12} sm={4} md={3} key={team.id}>
+                        <Grid item xs={12} sm={6} md={4} lg={3} key={team.id}>
                             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
                                 <Button
                                     variant="outlined"
@@ -80,7 +87,7 @@ const TeamSelection = () => {
                                         alignItems: "center",
                                         justifyContent: "center",
                                         gap: 1,
-                                        height: "200px",
+                                        height: { xs: "150px", sm: "200px" },
                                     }}
                                     onClick={() => handleSelectTeam(team)}
                                 >
@@ -88,14 +95,14 @@ const TeamSelection = () => {
                                         src={team.flagUrl}
                                         alt={team.name}
                                         style={{
-                                            width: "50px",
-                                            height: "50px",
-                                            filter: player1Team && player2Team && !(player1Team === team || player2Team === team)
-                                                ? "grayscale(100%)"
-                                                : "none",
+                                            width: "40px",
+                                            height: "40px",
+                                            filter: player1Team && player2Team && !(player1Team === team || player2Team === team) ? "grayscale(100%)" : "none",
                                         }}
                                     />
-                                    <Typography variant="body1">{team.name}</Typography>
+                                    <Typography variant="body1" sx={{ fontSize: { xs: "0.8rem", sm: "1rem" } }}>
+                                        {team.name}
+                                    </Typography>
                                     {player1Team === team && <FlagIcon sx={{ color: "blue" }} />}
                                     {player2Team === team && <FlagIcon sx={{ color: "red" }} />}
                                 </Button>
@@ -105,13 +112,8 @@ const TeamSelection = () => {
                 </Grid>
             </Box>
             {player1Team && player2Team && (
-                <Button
-                    variant="contained"
-                    color="primary"
-                    sx={{ marginTop: "20px" }}
-                    onClick={handleCheck11}
-                >
-                    Check Your 11
+                <Button variant="contained" color="primary" sx={{ marginTop: "20px" }} onClick={handleToss}>
+                    Toss and Start Game
                 </Button>
             )}
         </Container>
