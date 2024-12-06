@@ -29,6 +29,8 @@ const Game = () => {
     const [isWicket, setIsWicket] = useState(false);
     const [battingTeam, setBattingTeam] = useState("");
     const [loading, setLoading] = useState(true);
+    const [target, setTarget] = useState(0); // Store Player 1's target
+    const [player1InningComplete, setPlayer1InningComplete] = useState(false); // Track Player 1 inning completion
 
     const MAX_WICKETS = 5;
 
@@ -44,6 +46,7 @@ const Game = () => {
                         isWicket: false,
                         battingTeam: "No team",
                         isInningComplete: false,
+                        target: 0,
                     });
                     dispatch(setGameId(newGameRef.id));
                 } else {
@@ -86,6 +89,8 @@ const Game = () => {
         if (data.isInningComplete) {
             dispatch(setInningComplete());
         }
+        setTarget(data.target); // Get target for Player 2
+        setPlayer1InningComplete(data.isInningComplete);
     };
 
     const getRandomWicketChance = () => Math.random() < 0.2;
@@ -118,7 +123,26 @@ const Game = () => {
         dispatch(incrementScore(runs));
         setBall(newBall);
         setIsWicket(isOut);
-        if (inningComplete) dispatch(setInningComplete());
+
+        if (inningComplete && !player1InningComplete) {
+            // Player 1 inning is over, switch to Player 2
+            setPlayer1InningComplete(true);
+            setBattingTeam("Player 2");
+            updateFirestore({
+                score: newScore,
+                wickets: newWickets,
+                ball: newBall,
+                isWicket: isOut,
+                isInningComplete: inningComplete,
+                target: newScore, // Set target for Player 2
+                battingTeam: "Player 2",
+            });
+        } else if (inningComplete && player1InningComplete) {
+            // Player 2's inning complete logic
+            if (newScore > target) {
+                dispatch(setInningComplete());
+            }
+        }
 
         updateFirestore({
             score: newScore,
@@ -133,6 +157,8 @@ const Game = () => {
         dispatch(resetScore());
         setBall(0);
         setIsWicket(false);
+        setPlayer1InningComplete(false);
+        setTarget(0);
 
         updateFirestore({
             score: 0,
@@ -140,6 +166,8 @@ const Game = () => {
             ball: 0,
             isWicket: false,
             isInningComplete: false,
+            target: 0,
+            battingTeam: "No team",
         });
     };
 
@@ -183,8 +211,8 @@ const Game = () => {
                         disabled={loading || isInningComplete}
                         sx={{ color: "#fff" }}
                     >
-                        <MenuItem value="Team A">Team A</MenuItem>
-                        <MenuItem value="Team B">Team B</MenuItem>
+                        <MenuItem value="Player 1">Player 1</MenuItem>
+                        <MenuItem value="Player 2">Player 2</MenuItem>
                     </Select>
                 </FormControl>
 
@@ -219,12 +247,14 @@ const Game = () => {
 
                 {isInningComplete && (
                     <Typography variant="h6" sx={{ color: "#fff", mt: 3 }}>
-                        Innings Complete! Target for opponent: {score + 1}
+                        {player1InningComplete
+                            ? `Innings Complete! Player 2's Target: ${target}`
+                            : "Player 1's Innings Complete"}
                     </Typography>
                 )}
 
                 <Box sx={{ mt: 3 }}>
-                    <Button variant="contained" color="info" onClick={handleReset}>
+                    <Button variant="outlined" onClick={handleReset}>
                         Reset Game
                     </Button>
                 </Box>
